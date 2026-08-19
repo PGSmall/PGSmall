@@ -1,11 +1,10 @@
-name: Generate Snake
+name: Generate Snake and Combined Badges
 
 on:
   schedule:
-    - cron: "0 0 * * *" # 每天 UTC 0 点自动运行
+    - cron: "0 0 * * *" # 每天 UTC 0 点自动刷新
   workflow_dispatch: # 支持手动点击运行
 
-# 明确赋予写入权限，避免 exit code 128
 permissions:
   contents: write
 
@@ -16,13 +15,54 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Generate the snake visual from contribution grid
+      - name: Generate Snake
         uses: Platane/snk@v3
         with:
           github_user_name: PGSmall
           outputs: |
             dist/github-contribution-grid-snake.svg
             dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Calculate Combined Stars
+        run: |
+          mkdir -p dist/badges
+          python - << 'EOF'
+          import os, json, urllib.request
+
+          token = os.environ.get('GITHUB_TOKEN')
+          headers = {'User-Agent': 'GitHub-Action', 'Authorization': f'Bearer {token}'} if token else {'User-Agent': 'GitHub-Action'}
+
+          def get_stars(repo):
+              try:
+                  req = urllib.request.Request(f'https://api.github.com/repos/{repo}', headers=headers)
+                  with urllib.request.urlopen(req) as resp:
+                      return json.loads(resp.read().decode()).get('stargazers_count', 0)
+              except Exception as e:
+                  print(f"Error fetching {repo}: {e}")
+                  return 0
+
+          # 需合并计算的仓库列表
+          pairs = {
+              "videomac": ("VideoMAC", ["NUST-Machine-Intelligence-Laboratory/VideoMAC", "Video-MAC/VideoMAC"]),
+              "clip_pgs": ("clip-pgs", ["NUST-Machine-Intelligence-Laboratory/clip-pgs", "PGSmall/clip-pgs"]),
+              "hvc": ("HVC", ["PGSmall/HVC", "NUST-Machine-Intelligence-Laboratory/HVC"])
+          }
+
+          for key, (label, repos) in pairs.items():
+              total = sum(get_stars(r) for r in repos)
+              badge_data = {
+                  "schemaVersion": 1,
+                  "label": label,
+                  "message": f"★ {total}",
+                  "color": "b58900",
+                  "labelColor": "002b36"
+              }
+              with open(f'dist/badges/{key}.json', 'w', encoding='utf-8') as f:
+                  json.dump(badge_data, f)
+              print(f"✅ {label} Combined Stars: {total}")
+          EOF
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
