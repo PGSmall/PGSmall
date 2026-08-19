@@ -5,7 +5,7 @@ on:
     - cron: "0 0 * * *" # 每天 UTC 0 点自动刷新
   workflow_dispatch: # 支持手动点击运行
 
-# 必须声明写入权限
+# 声明写入权限
 permissions:
   contents: write
 
@@ -55,11 +55,12 @@ jobs:
                   print(f"[WARN] Could not fetch {repo}: {e}")
                   return 0
 
-          # 3 组需要合并计算的仓库列表
+          # 4 组需要合并计算的仓库列表
           pairs = {
+              "hvc": ("HVC", ["PGSmall/HVC", "NUST-Machine-Intelligence-Laboratory/HVC"]),
+              "hfan": ("HFAN", ["NUST-Machine-Intelligence-Laboratory/HFAN", "CODE4UVOS/HFAN"]),
               "videomac": ("VideoMAC", ["NUST-Machine-Intelligence-Laboratory/VideoMAC", "Video-MAC/VideoMAC"]),
-              "clip_pgs": ("clip-pgs", ["NUST-Machine-Intelligence-Laboratory/clip-pgs", "PGSmall/clip-pgs"]),
-              "hvc": ("HVC", ["PGSmall/HVC", "NUST-Machine-Intelligence-Laboratory/HVC"])
+              "clip_pgs": ("clip-pgs", ["NUST-Machine-Intelligence-Laboratory/clip-pgs", "PGSmall/clip-pgs"])
           }
 
           for key, (label, repos) in pairs.items():
@@ -78,7 +79,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 3. 部署并推送到 output 分支（采用最稳定的 peaceiris 插件）
+      # 3. 部署并推送到 output 分支
       - name: Deploy to output branch
         uses: peaceiris/actions-gh-pages@v4
         with:
