@@ -9,6 +9,9 @@
   </p>
 
   <p>
+    <a href="https://github.com/NUST-Machine-Intelligence-Laboratory/HFAN" target="_blank">
+      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FPGSmall%2FPGSmall%2Foutput%2Fbadges%2Fhfan.json&style=flat-square" height="26" alt="HFAN Combined Stars" />
+    </a>
     <a href="https://github.com/NUST-Machine-Intelligence-Laboratory/HVC" target="_blank">
       <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FPGSmall%2FPGSmall%2Foutput%2Fbadges%2Fhvc.json&style=flat-square" height="26" alt="HVC Combined Stars" />
     </a>
@@ -16,7 +19,7 @@
       <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FPGSmall%2FPGSmall%2Foutput%2Fbadges%2Fvideomac.json&style=flat-square" height="26" alt="VideoMAC Combined Stars" />
     </a>
     <a href="https://github.com/PGSmall/clip-pgs" target="_blank">
-      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FPGSmall%2FPGSmall%2Foutput%2Fbadges%2Fclip_pgs.json&style=flat-square" height="26" alt="clip-pgs Combined Stars" />
+      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FPGSmall%2FPGSmall%2Foutput%2Fbadges%2Fclip_pgs.json&style=flat-square" height="26" alt="CLIP-PGS Combined Stars" />
     </a>
   </p>
 
@@ -36,8 +39,6 @@
   <img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=PGSmall&theme=solarized_dark" width="420" alt="Most Commit Language" />
 
   <br/>
-
-</div>
 
 </div>
 
