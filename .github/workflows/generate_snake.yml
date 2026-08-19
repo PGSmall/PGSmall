@@ -5,6 +5,7 @@ on:
     - cron: "0 0 * * *" # 每天 UTC 0 点自动刷新
   workflow_dispatch: # 支持手动点击运行
 
+# 必须声明写入权限
 permissions:
   contents: write
 
@@ -15,8 +16,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Generate Snake
-        uses: Platane/snk@v3
+      # 1. 生成贪吃蛇 SVG
+      - name: Generate Snake SVG
+        uses: Platane/snk/svg-only@v3
         with:
           github_user_name: PGSmall
           outputs: |
@@ -25,25 +27,35 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # 2. 合并计算多仓库 Stars 并生成 JSON 徽章
       - name: Calculate Combined Stars
         run: |
           mkdir -p dist/badges
-          python - << 'EOF'
+          python3 - << 'EOF'
           import os, json, urllib.request
 
           token = os.environ.get('GITHUB_TOKEN')
-          headers = {'User-Agent': 'GitHub-Action', 'Authorization': f'Bearer {token}'} if token else {'User-Agent': 'GitHub-Action'}
+          headers = {
+              'User-Agent': 'Mozilla/5.0',
+              'Accept': 'application/vnd.github.v3+json'
+          }
+          if token:
+              headers['Authorization'] = f'token {token}'
 
           def get_stars(repo):
               try:
-                  req = urllib.request.Request(f'https://api.github.com/repos/{repo}', headers=headers)
-                  with urllib.request.urlopen(req) as resp:
-                      return json.loads(resp.read().decode()).get('stargazers_count', 0)
+                  url = f'https://api.github.com/repos/{repo.strip()}'
+                  req = urllib.request.Request(url, headers=headers)
+                  with urllib.request.urlopen(req, timeout=10) as resp:
+                      data = json.loads(resp.read().decode())
+                      stars = data.get('stargazers_count', 0)
+                      print(f"[SUCCESS] {repo} -> {stars} stars")
+                      return stars
               except Exception as e:
-                  print(f"Error fetching {repo}: {e}")
+                  print(f"[WARN] Could not fetch {repo}: {e}")
                   return 0
 
-          # 需合并计算的仓库列表
+          # 3 组需要合并计算的仓库列表
           pairs = {
               "videomac": ("VideoMAC", ["NUST-Machine-Intelligence-Laboratory/VideoMAC", "Video-MAC/VideoMAC"]),
               "clip_pgs": ("clip-pgs", ["NUST-Machine-Intelligence-Laboratory/clip-pgs", "PGSmall/clip-pgs"]),
@@ -61,15 +73,16 @@ jobs:
               }
               with open(f'dist/badges/{key}.json', 'w', encoding='utf-8') as f:
                   json.dump(badge_data, f)
-              print(f"✅ {label} Combined Stars: {total}")
+              print(f"==> Total for {label}: {total}")
           EOF
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # 3. 部署并推送到 output 分支（采用最稳定的 peaceiris 插件）
       - name: Deploy to output branch
-        uses: crazy-max/ghaction-github-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          target_branch: output
-          build_dir: dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: output
+          force_orphan: true
