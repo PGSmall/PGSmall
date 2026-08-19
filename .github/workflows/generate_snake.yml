@@ -2,15 +2,19 @@ name: Generate Snake
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Runs daily at 00:00 UTC
-  workflow_dispatch: # Allows manual trigger
+    - cron: "0 0 * * *" # 每天 UTC 0 点自动运行
+  workflow_dispatch: # 支持手动点击运行
+
+# 明确赋予写入权限，避免 exit code 128
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate the snake visual from contribution grid
         uses: Platane/snk@v3
@@ -23,7 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to output branch
-        uses: crazy-max/ghaction-github-pages@v3.1.0
+        uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: output
           build_dir: dist
