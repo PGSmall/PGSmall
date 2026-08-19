@@ -60,7 +60,7 @@ jobs:
               "hvc": ("HVC", ["PGSmall/HVC", "NUST-Machine-Intelligence-Laboratory/HVC"]),
               "hfan": ("HFAN", ["NUST-Machine-Intelligence-Laboratory/HFAN", "CODE4UVOS/HFAN"]),
               "videomac": ("VideoMAC", ["NUST-Machine-Intelligence-Laboratory/VideoMAC", "Video-MAC/VideoMAC"]),
-              "clip_pgs": ("clip-pgs", ["NUST-Machine-Intelligence-Laboratory/clip-pgs", "PGSmall/clip-pgs"])
+              "clip_pgs": ("CLIP-PGS", ["NUST-Machine-Intelligence-Laboratory/clip-pgs", "PGSmall/clip-pgs"])
           }
 
           for key, (label, repos) in pairs.items():
